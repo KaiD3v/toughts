@@ -14,6 +14,7 @@ const User = require("./models/User");
 
 // import Routes
 const toughtsRoutes = require("./routes/toughtsRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 // import controller
 const { showToughts } = require("./controllers/ToughtController");
@@ -33,13 +34,13 @@ app.use(express.json());
 // session middleware
 app.use(
   session({
-    name: 'session',
-    secret: 'nosso_secret',
+    name: "session",
+    secret: "nosso_secret",
     resave: false,
     saveUninitialized: false,
     store: new FileStore({
       logFn: function () {},
-      path: require('path').join(require('os').tmpdir(), 'sessions'),
+      path: require("path").join(require("os").tmpdir(), "sessions"),
     }),
     cookie: {
       secure: false,
@@ -47,8 +48,8 @@ app.use(
       expires: new Date(Date.now() + 3600000),
       httpOnly: true,
     },
-  }),
-)
+  })
+);
 
 // flash messages
 app.use(flash());
@@ -58,6 +59,8 @@ app.use(express.static("public"));
 
 // Routes
 app.use("/toughts", toughtsRoutes);
+app.use("/", authRoutes);
+
 app.get("/", ToughtController.showToughts);
 
 // set session to res
