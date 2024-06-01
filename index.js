@@ -12,6 +12,13 @@ const conn = require("./db/conn");
 const Tought = require("./models/Tought");
 const User = require("./models/User");
 
+// import Routes
+const toughtsRoutes = require("./routes/toughtsRoutes");
+
+// import controller
+const { showToughts } = require("./controllers/ToughtController");
+const ToughtController = require("./controllers/ToughtController");
+
 app.engine("handlebars", exphbs.engine());
 app.set("view engine", "handlebars");
 
@@ -26,28 +33,32 @@ app.use(express.json());
 // session middleware
 app.use(
   session({
-    name: "session",
-    secret: "my_secret",
+    name: 'session',
+    secret: 'nosso_secret',
     resave: false,
     saveUninitialized: false,
     store: new FileStore({
-      logFn: () => {},
-      path: require("path").join(require("os").tmpdir(), "sessions"),
+      logFn: function () {},
+      path: require('path').join(require('os').tmpdir(), 'sessions'),
     }),
     cookie: {
       secure: false,
-      maxAge: 360000,
-      expires: new Date(Date.now() + 360000),
+      maxAge: 3600000,
+      expires: new Date(Date.now() + 3600000),
       httpOnly: true,
     },
-  })
-);
+  }),
+)
 
 // flash messages
 app.use(flash());
 
 // public path
 app.use(express.static("public"));
+
+// Routes
+app.use("/toughts", toughtsRoutes);
+app.get("/", ToughtController.showToughts);
 
 // set session to res
 app.use((req, res, next) => {
@@ -59,7 +70,7 @@ app.use((req, res, next) => {
 });
 
 conn
-  .sync({force: true})
+  .sync()
   .then(() => {
     app.listen(3000);
   })
